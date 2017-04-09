@@ -70,7 +70,7 @@ public class Movie implements Parcelable {
     @Override
     public String toString() {
 
-        return String.valueOf(ID) + " " + title + " " + voteAverage + " " + releaseDate + " " + getImageURL() + " " + getSynopsis();
+        return String.valueOf(ID) + " " + title + " " + voteAverage + " " + releaseDate + " " + getImageURL() ;
     }
 
     protected Movie(Parcel in) {

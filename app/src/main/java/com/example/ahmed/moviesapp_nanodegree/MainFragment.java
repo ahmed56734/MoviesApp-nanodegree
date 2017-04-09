@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -118,18 +119,19 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     void updateUi(){
 
         if(isOnline()) {
-            Bundle loaderArgs = new Bundle();
-            loaderArgs.putString("url", selectedSort);
-            LoaderManager loaderManager = getLoaderManager();
-            Loader moviesLoader = loaderManager.getLoader(MOVIES_LOADER_ID);
-            Log.d("sort", selectedSort);
+//            Bundle loaderArgs = new Bundle();
+//            loaderArgs.putString("url", selectedSort);
+//            LoaderManager loaderManager = getLoaderManager();
+//            Loader moviesLoader = loaderManager.getLoader(MOVIES_LOADER_ID);
+//
+//            if (moviesLoader == null)
+//                loaderManager.initLoader(MOVIES_LOADER_ID, loaderArgs, this);
+//
+//
+//            else
+//                loaderManager.restartLoader(MOVIES_LOADER_ID, loaderArgs, this);
 
-            if (moviesLoader == null)
-                loaderManager.initLoader(MOVIES_LOADER_ID, loaderArgs, this);
-
-
-            else
-                loaderManager.restartLoader(MOVIES_LOADER_ID, loaderArgs, this);
+            new MoviesAsyncTask().execute(selectedSort);
         }
         else{
             mMoviesRecyclerView.setVisibility(View.INVISIBLE);
@@ -161,7 +163,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
             mMoviesAdapter.updateData(data);
 
-            progressBar.setVisibility(View.GONE);
+            progressBar.setVisibility(View.INVISIBLE);
             mMoviesRecyclerView.setVisibility(View.VISIBLE);
         }
 
@@ -171,6 +173,40 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoaderReset(Loader<List<Movie>> loader) {
 
+    }
+
+
+    class MoviesAsyncTask extends AsyncTask<String, Void, List<Movie> >{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+            mMoviesRecyclerView.setVisibility(View.INVISIBLE);
+            errorMessage.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
+        protected List<Movie> doInBackground(String... url) {
+            String json = Utils.downloadJSON(url[0]);
+            return Utils.parseMoviesJSON(json);
+        }
+
+        @Override
+        protected void onPostExecute(List<Movie> movies) {
+            super.onPostExecute(movies);
+            if(movies != null) {
+
+                for (Movie movie : movies)
+                    Log.d("movie", movie.toString());
+
+                mMoviesAdapter.updateData(movies);
+
+                progressBar.setVisibility(View.GONE);
+                mMoviesRecyclerView.setVisibility(View.VISIBLE);
+
+            }
+        }
     }
 
     @Override
