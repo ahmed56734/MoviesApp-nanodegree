@@ -3,6 +3,7 @@ package com.example.ahmed.moviesapp_nanodegree;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -40,12 +41,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private static final String popularityURL = "http://api.themoviedb.org/3/movie/popular?api_key="+KEYS.MOVIES_API_KEY;
     private static final String topRatedURL = "http://api.themoviedb.org/3/movie/top_rated?api_key="+KEYS.MOVIES_API_KEY;
     private String selectedSort = popularityURL;
-    @BindView(R.id.rv_movies_grid)
-    RecyclerView mMoviesRecyclerView;
-    @BindView(R.id.pb_loading)
-    ProgressBar progressBar;
+    @BindView(R.id.rv_movies_grid) RecyclerView mMoviesRecyclerView;
+    @BindView(R.id.pb_loading) ProgressBar mProgressBar;
     @BindView(R.id.internet_error_message)
-    TextView errorMessage;
+    TextView mErrorMessage;
     MoviesAdapter mMoviesAdapter;
 
 
@@ -72,8 +71,14 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
         ButterKnife.bind(this, rootView);
         mMoviesRecyclerView.setAdapter(mMoviesAdapter);
-        mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        Log.d("mainfragment", "onCreateView");
+
+        if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+            mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        else
+            mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
+
+
         return rootView;
     }
 
@@ -104,39 +109,31 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.d("mainfragment", "onResume");
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
-        Log.d("mainfragment", "onStart");
         updateUi();
     }
 
     void updateUi(){
 
         if(isOnline()) {
-//            Bundle loaderArgs = new Bundle();
-//            loaderArgs.putString("url", selectedSort);
-//            LoaderManager loaderManager = getLoaderManager();
-//            Loader moviesLoader = loaderManager.getLoader(MOVIES_LOADER_ID);
-//
-//            if (moviesLoader == null)
-//                loaderManager.initLoader(MOVIES_LOADER_ID, loaderArgs, this);
-//
-//
-//            else
-//                loaderManager.restartLoader(MOVIES_LOADER_ID, loaderArgs, this);
+            Bundle loaderArgs = new Bundle();
+            loaderArgs.putString("url", selectedSort);
+            LoaderManager loaderManager = getLoaderManager();
+            Loader moviesLoader = loaderManager.getLoader(MOVIES_LOADER_ID);
 
-            new MoviesAsyncTask().execute(selectedSort);
+            showLoadingIndicator();
+            if (moviesLoader == null)
+                loaderManager.initLoader(MOVIES_LOADER_ID, loaderArgs, this);
+
+
+            else
+                loaderManager.restartLoader(MOVIES_LOADER_ID, loaderArgs, this);
+
+
         }
         else{
-            mMoviesRecyclerView.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.INVISIBLE);
-            errorMessage.setVisibility(View.VISIBLE);
+            showErrorMessage();
         }
 
     }
@@ -149,24 +146,15 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     }
 
-
-
     @Override
     public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
 
         Log.d("mainfragment", "onLoadFinished");
 
         if(data != null) {
-
-            for (Movie movie : data)
-                Log.d("movie", movie.toString());
-
             mMoviesAdapter.updateData(data);
-
-            progressBar.setVisibility(View.INVISIBLE);
-            mMoviesRecyclerView.setVisibility(View.VISIBLE);
+            showResults();
         }
-
 
     }
 
@@ -176,38 +164,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
 
-    class MoviesAsyncTask extends AsyncTask<String, Void, List<Movie> >{
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
-            mMoviesRecyclerView.setVisibility(View.INVISIBLE);
-            errorMessage.setVisibility(View.INVISIBLE);
-        }
-
-        @Override
-        protected List<Movie> doInBackground(String... url) {
-            String json = Utils.downloadJSON(url[0]);
-            return Utils.parseMoviesJSON(json);
-        }
-
-        @Override
-        protected void onPostExecute(List<Movie> movies) {
-            super.onPostExecute(movies);
-            if(movies != null) {
-
-                for (Movie movie : movies)
-                    Log.d("movie", movie.toString());
-
-                mMoviesAdapter.updateData(movies);
-
-                progressBar.setVisibility(View.GONE);
-                mMoviesRecyclerView.setVisibility(View.VISIBLE);
-
-            }
-        }
-    }
 
     @Override
     public void onMovieClick(int position) {
@@ -223,6 +179,25 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                 (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    void showErrorMessage(){
+        mProgressBar.setVisibility(View.INVISIBLE);
+        mMoviesRecyclerView.setVisibility(View.INVISIBLE);
+        mErrorMessage.setVisibility(View.VISIBLE);
+
+    }
+
+    void showLoadingIndicator(){
+        mProgressBar.setVisibility(View.VISIBLE);
+        mMoviesRecyclerView.setVisibility(View.INVISIBLE);
+        mErrorMessage.setVisibility(View.INVISIBLE);
+    }
+
+    void showResults(){
+        mProgressBar.setVisibility(View.INVISIBLE);
+        mMoviesRecyclerView.setVisibility(View.VISIBLE);
+        mErrorMessage.setVisibility(View.INVISIBLE);
     }
 
 
