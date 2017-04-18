@@ -94,6 +94,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         int id = item.getItemId();
 
         switch (id){
+
+            case R.id.item_settings:
+                Intent i = new Intent(getContext(), SettingsActivity.class);
+                startActivity(i);
+                return true;
+
             case R.id.item_most_popular:
                 selectedSort = popularityURL;
                 updateUi();
@@ -198,6 +204,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         mProgressBar.setVisibility(View.INVISIBLE);
         mMoviesRecyclerView.setVisibility(View.VISIBLE);
         mErrorMessage.setVisibility(View.INVISIBLE);
+
     }
 
 

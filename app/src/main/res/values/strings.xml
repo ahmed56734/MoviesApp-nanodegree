@@ -8,4 +8,17 @@
     <string name="most_popular">Most popular</string>
     <string name="synopsis">Synopsis</string>
     <string name="internet_error_message">no internet connection</string>
+
+    <string name="item_settings">Settings</string>
+
+    <!--preferences strings-->
+
+    <string name="pref_movies_sort_label">Movies Display Option</string>
+    <string name="pref_movies_sort_key" translatable="false">sort_key</string>
+    <string name="pref_movies_sort_popularity_value" translatable="false">popular</string>
+    <string name="pref_movies_sort_popularity_label">Popular Movies</string>
+    <string name="pref_movies_sort_toprated_value" translatable="false">toprated</string>
+    <string name="pref_movies_sort_toprated_label">Top Rated Movies</string>
+
+
 </resources>
