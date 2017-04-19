@@ -11,6 +11,7 @@ import java.util.List;
 
 public class MoviesLoader extends AsyncTaskLoader<List<Movie>> {
 
+
     String url;
 
     MoviesLoader(Context context, String url){

@@ -118,33 +118,33 @@ public class Utils {
 
 
 
-//    public static List<Review> parseReviewsJSON(String json){
-//
-//        List<Review> reviews = new ArrayList<>();
-//
-//        if (json == null || json.isEmpty())
-//            return null;
-//
-//        try {
-//
-//            JSONObject rootJSON = new JSONObject(json);
-//            JSONArray reviewsResultArray = rootJSON.getJSONArray("results");
-//
-//            for(int i = 0, n = reviewsResultArray.length(); i < n ; i++){
-//
-//                JSONObject reviewJSON = reviewsResultArray.getJSONObject(i);
-//                String review = reviewJSON.getString("content");
-//                String author = reviewJSON.getString("author");
-//
-//                reviews.add(new Review(author, review));
-//            }
-//
-//        } catch (JSONException e){
-//            Log.e(LOG_TAG, "error parsing json", e);
-//        }
-//
-//        return reviews;
-//    }
+    public static List<Review> parseReviewsJSON(String json){
+
+        List<Review> reviews = new ArrayList<>();
+
+        if (json == null || json.isEmpty())
+            return null;
+
+        try {
+
+            JSONObject rootJSON = new JSONObject(json);
+            JSONArray reviewsResultArray = rootJSON.getJSONArray("results");
+
+            for(int i = 0, n = reviewsResultArray.length(); i < n ; i++){
+
+                JSONObject reviewJSON = reviewsResultArray.getJSONObject(i);
+                String review = reviewJSON.getString("content");
+                String author = reviewJSON.getString("author");
+
+                reviews.add(new Review(author, review));
+            }
+
+        } catch (JSONException e){
+            Log.e(LOG_TAG, "error parsing json", e);
+        }
+
+        return reviews;
+    }
 
 //    public static List<Trailer> parseTrailersJSON(String json){
 //

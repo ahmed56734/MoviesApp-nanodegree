@@ -29,7 +29,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_margin="@dimen/activity_horizontal_margin">
+            android:layout_margin="16dp"
+            android:layout_marginBottom="0dp">
 
             <ImageView
                 android:id="@+id/movie_poster"
@@ -86,12 +87,13 @@
             tools:text="asa dsah sakdj    ksad sad j dkas ksadk sak sa "
             android:layout_margin="16dp"/>
 
-
-
-
-
-
-
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_reviews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
+
+
+
 </ScrollView>
