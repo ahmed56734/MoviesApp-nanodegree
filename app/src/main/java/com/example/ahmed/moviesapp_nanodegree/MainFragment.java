@@ -3,11 +3,13 @@ package com.example.ahmed.moviesapp_nanodegree;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -40,7 +42,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private static final String popularityURL = "http://api.themoviedb.org/3/movie/popular?api_key="+KEYS.MOVIES_API_KEY;
     private static final String topRatedURL = "http://api.themoviedb.org/3/movie/top_rated?api_key="+KEYS.MOVIES_API_KEY;
-    private String selectedSort = popularityURL;
+    private String selectedSort ;
     @BindView(R.id.rv_movies_grid) RecyclerView mMoviesRecyclerView;
     @BindView(R.id.pb_loading) ProgressBar mProgressBar;
     @BindView(R.id.internet_error_message)
@@ -100,15 +102,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                 startActivity(i);
                 return true;
 
-            case R.id.item_most_popular:
-                selectedSort = popularityURL;
-                updateUi();
-                return true;
-
-            case R.id.item_top_reated:
-                selectedSort = topRatedURL;
-                updateUi();
-                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -123,6 +116,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     void updateUi(){
 
         if(isOnline()) {
+
+            selectedSort = findUserSortOption();
+
             Bundle loaderArgs = new Bundle();
             loaderArgs.putString("url", selectedSort);
             LoaderManager loaderManager = getLoaderManager();
@@ -207,5 +203,13 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     }
 
+    private String findUserSortOption(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String userSortOption = sharedPreferences.getString(getString(R.string.pref_movies_sort_key), getString(R.string.pref_movies_sort_popularity_value));
+        if(userSortOption.equals(getString(R.string.pref_movies_sort_popularity_value)))
+            return popularityURL;
+        else
+            return topRatedURL;
+    }
 
 }
