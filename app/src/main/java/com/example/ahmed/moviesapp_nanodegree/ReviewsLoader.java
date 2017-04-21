@@ -11,10 +11,10 @@ import java.util.List;
 
 public class ReviewsLoader extends AsyncTaskLoader<List<Review>> {
 
-    private int movieID;
+    private Long movieID;
     private static final String reviewsBaseUrl = "http://api.themoviedb.org/3/movie/{ID}/reviews?api_key="+KEYS.MOVIES_API_KEY;
 
-    ReviewsLoader(Context context, int movieID){
+    ReviewsLoader(Context context, Long movieID){
         super(context);
         this.movieID = movieID;
 

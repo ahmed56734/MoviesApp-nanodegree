@@ -17,10 +17,10 @@ public class Movie implements Parcelable {
     private String releaseDate;
     private String voteAverage;
     private String overview;
-    private int ID;
+    private Long ID;
 
 
-    public Movie(int ID, String title, String voteAverage, String releaseDate, String imageURL, String overview) {
+    public Movie(Long ID, String title, String voteAverage, String releaseDate, String imageURL, String overview) {
 
         this.title = title;
         this.voteAverage = voteAverage;
@@ -46,13 +46,13 @@ public class Movie implements Parcelable {
         return voteAverage + "/10";
     }
 
-    public int getID() {
+    public Long getID() {
         return ID;
     }
 
     String getReleaseYear() {
 
-        return releaseDate.substring(0, 4);
+        return getReleaseDate().substring(0, 4);
     }
 
     public String getSynopsis() {
@@ -79,7 +79,7 @@ public class Movie implements Parcelable {
         releaseDate = in.readString();
         voteAverage = in.readString();
         overview = in.readString();
-        ID = in.readInt();
+        ID = in.readLong();
     }
 
     @Override
@@ -94,7 +94,7 @@ public class Movie implements Parcelable {
         dest.writeString(releaseDate);
         dest.writeString(voteAverage);
         dest.writeString(overview);
-        dest.writeInt(ID);
+        dest.writeLong(ID);
     }
 
     @SuppressWarnings("unused")

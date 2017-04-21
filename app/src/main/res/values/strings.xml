@@ -8,6 +8,7 @@
     <string name="most_popular">Most popular</string>
     <string name="synopsis">Synopsis</string>
     <string name="internet_error_message">no internet connection</string>
+    <string name="empty_favorite_movies_message">you have no favirute movies yet</string>
 
     <string name="item_settings">Settings</string>
 
@@ -19,6 +20,8 @@
     <string name="pref_movies_sort_popularity_label">Popular Movies</string>
     <string name="pref_movies_sort_toprated_value" translatable="false">toprated</string>
     <string name="pref_movies_sort_toprated_label">Top Rated Movies</string>
+    <string name="pref_movies_sort_favorite_value" translatable="false">favorite</string>
+    <string name="pref_movies_sort_favorite_label">Favorite Movies</string>
 
 
 </resources>

@@ -104,7 +104,7 @@ public class Utils {
                 String releaseDate = movieJSON.getString("release_date");
                 String title = movieJSON.getString("original_title");
                 String voteAverage = movieJSON.getString("vote_average");
-                int ID = movieJSON.getInt("id");
+                Long ID = movieJSON.getLong("id");
 
                 movies.add(new Movie(ID, title, voteAverage, releaseDate, posterPath, overview));
             }

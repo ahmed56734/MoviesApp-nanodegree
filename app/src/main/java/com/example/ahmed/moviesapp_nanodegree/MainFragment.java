@@ -1,12 +1,17 @@
 package com.example.ahmed.moviesapp_nanodegree;
 
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -26,6 +31,10 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.ahmed.moviesapp_nanodegree.data.MovieContentProvider;
+import com.example.ahmed.moviesapp_nanodegree.data.MovieContract.MovieEntry;
+import com.example.ahmed.moviesapp_nanodegree.data.MovieDbHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +51,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private static final String popularityURL = "http://api.themoviedb.org/3/movie/popular?api_key="+KEYS.MOVIES_API_KEY;
     private static final String topRatedURL = "http://api.themoviedb.org/3/movie/top_rated?api_key="+KEYS.MOVIES_API_KEY;
-    private String selectedSort ;
+    private static final String favoriteMovies = "favorite";
+    private String mSelectedSort;
     @BindView(R.id.rv_movies_grid) RecyclerView mMoviesRecyclerView;
     @BindView(R.id.pb_loading) ProgressBar mProgressBar;
     @BindView(R.id.internet_error_message)
@@ -111,17 +121,33 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onStart() {
         super.onStart();
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(MovieEntry.COLUMN_ID, "4");
+//        contentValues.put(MovieEntry.COLUMN_IMAGE_URL, "https://d304k3mn1nwj0a.cloudfront.net/anime/Fairy-Tail.png");
+//        contentValues.put(MovieEntry.COLUMN_TITLE, "title");
+//        contentValues.put(MovieEntry.COLUMN_RELEASE_DATE, "2017");
+//        contentValues.put(MovieEntry.COLUMN_SYNOPSIS, "film gamed fash5");
+//        contentValues.put(MovieEntry.COLUMN_VOTE_AVERAGE, "10/10");
+//
+//        getContext().getContentResolver().insert(MovieEntry.CONTENT_URI, contentValues);
+//
+        Cursor cursor = getContext().getContentResolver().query(MovieEntry.CONTENT_URI,null,null, null,null);
+        while (cursor.moveToNext()){
+            Log.d("movied id",cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_ID)));
+        }
         updateUi();
     }
 
     void updateUi(){
 
+        showLoadingIndicator();
+        mSelectedSort = findUserSortOption();
+
+
         if(isOnline()) {
 
-            selectedSort = findUserSortOption();
-
             Bundle loaderArgs = new Bundle();
-            loaderArgs.putString("url", selectedSort);
+            loaderArgs.putString("sort", mSelectedSort);
             LoaderManager loaderManager = getLoaderManager();
             Loader moviesLoader = loaderManager.getLoader(MOVIES_LOADER_ID);
 
@@ -132,11 +158,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
             else
                 loaderManager.restartLoader(MOVIES_LOADER_ID, loaderArgs, this);
+            ;
 
 
         }
         else{
-            showErrorMessage();
+            showErrorMessage(getString(R.string.internet_error_message));
         }
 
     }
@@ -144,19 +171,24 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
 
-        Log.d("mainfragment", "ONCreateLoader");
-        return new MoviesLoader(getContext(), args.getString("url"));
+        return new MoviesLoader(getContext(), args.getString("sort"));
 
     }
 
     @Override
     public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
 
-        Log.d("mainfragment", "onLoadFinished");
 
-        if(data != null) {
+        if(data != null && !data.isEmpty()) {
             mMoviesAdapter.updateData(data);
             showResults();
+        }
+
+        else{
+            if(mSelectedSort.equals(getString(R.string.pref_movies_sort_favorite_value)))
+                showErrorMessage(getString(R.string.empty_favorite_movies_message));
+            else
+                showErrorMessage(getString(R.string.internet_error_message));
         }
 
     }
@@ -184,9 +216,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
-    void showErrorMessage(){
+    void showErrorMessage(String message){
         mProgressBar.setVisibility(View.INVISIBLE);
         mMoviesRecyclerView.setVisibility(View.INVISIBLE);
+        mErrorMessage.setText(message);
         mErrorMessage.setVisibility(View.VISIBLE);
 
     }
@@ -206,11 +239,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private String findUserSortOption(){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String userSortOption = sharedPreferences.getString(getString(R.string.pref_movies_sort_key), getString(R.string.pref_movies_sort_popularity_value));
-        if(userSortOption.equals(getString(R.string.pref_movies_sort_popularity_value)))
-            return popularityURL;
-        else
-            return topRatedURL;
+        return  sharedPreferences.getString(getString(R.string.pref_movies_sort_key), getString(R.string.pref_movies_sort_popularity_value));
     }
+
 
 }
