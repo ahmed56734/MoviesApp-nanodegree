@@ -3,6 +3,7 @@ package com.example.ahmed.moviesapp_nanodegree;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
@@ -36,10 +37,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class DetailsFragment extends Fragment {
+public class DetailsFragment extends Fragment implements TrailersAdapter.TrailerClickListener {
 
     private Movie mMovie;
     private static int REVIEWS_LOADER_ID = 2;
+    private static int TRAILER_LOADER_ID = 3;
     private Boolean moviesIsInFavorites;
     @BindView(R.id.movie_poster)
     ImageView posterImageView;
@@ -50,6 +52,8 @@ public class DetailsFragment extends Fragment {
     @BindView(R.id.movie_title) TextView titleTextView;
     @BindView(R.id.rv_reviews) RecyclerView mReviewsRecyclerView;
     ReviewsAdapter mReviewsAdapter;
+    @BindView(R.id.rv_trailers) RecyclerView mTrailersRecyclerView;
+    TrailersAdapter mTrailersAdapter;
 
 
 
@@ -129,13 +133,19 @@ public class DetailsFragment extends Fragment {
 
         Picasso.with(getContext()).load(mMovie.getFullImageUrlForMainFragment()).into(posterImageView);
         releaseYearTextView.setText(mMovie.getReleaseYear());
-        voteAverageTextView.setText(mMovie.getVoteAverage());
+        voteAverageTextView.setText(mMovie.getVoteAverage()+"/10");
         synopsisTextView.setText(mMovie.getSynopsis());
         titleTextView.setText(mMovie.getTitle());
+
+        mTrailersRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mTrailersAdapter = new TrailersAdapter(this);
+        mTrailersRecyclerView.setAdapter(mTrailersAdapter);
 
         mReviewsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mReviewsAdapter = new ReviewsAdapter();
         mReviewsRecyclerView.setAdapter(mReviewsAdapter);
+
+
 
 
         return rootView;
@@ -146,9 +156,14 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        getLoaderManager().initLoader(TRAILER_LOADER_ID, null, trailersLoaderListner);
         getLoaderManager().initLoader(REVIEWS_LOADER_ID, null, reviewsLoaderListner);
+
+
     }
 
+    ///////////////////// reviews loader callbacks
     private LoaderManager.LoaderCallbacks<List<Review>> reviewsLoaderListner = new LoaderManager.LoaderCallbacks<List<Review>>(){
         @Override
         public Loader<List<Review>> onCreateLoader(int id, Bundle args) {
@@ -165,6 +180,27 @@ public class DetailsFragment extends Fragment {
 
         @Override
         public void onLoaderReset(Loader<List<Review>> loader) {
+
+        }
+    };
+
+    ////////////////////// trailers loader callbacks
+    private LoaderManager.LoaderCallbacks<List<Trailer>> trailersLoaderListner = new LoaderManager.LoaderCallbacks<List<Trailer>>(){
+        @Override
+        public Loader<List<Trailer>> onCreateLoader(int id, Bundle args) {
+            return new TrailersLoader(getContext(), mMovie.getID());
+        }
+
+
+        @Override
+        public void onLoadFinished(Loader<List<Trailer>> loader, List<Trailer> data) {
+
+            mTrailersAdapter.updateData(data);
+
+        }
+
+        @Override
+        public void onLoaderReset(Loader<List<Trailer>> loader) {
 
         }
     };
@@ -186,4 +222,9 @@ public class DetailsFragment extends Fragment {
     }
 
 
+    @Override
+    public void onTrailerClick(String url) {
+        startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("http://www.youtube.com/watch?v="+url)));
+
+    }
 }

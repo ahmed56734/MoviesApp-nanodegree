@@ -49,9 +49,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private static final int MOVIES_LOADER_ID = 1;
 
-    private static final String popularityURL = "http://api.themoviedb.org/3/movie/popular?api_key="+KEYS.MOVIES_API_KEY;
-    private static final String topRatedURL = "http://api.themoviedb.org/3/movie/top_rated?api_key="+KEYS.MOVIES_API_KEY;
-    private static final String favoriteMovies = "favorite";
     private String mSelectedSort;
     @BindView(R.id.rv_movies_grid) RecyclerView mMoviesRecyclerView;
     @BindView(R.id.pb_loading) ProgressBar mProgressBar;
@@ -121,20 +118,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onStart() {
         super.onStart();
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(MovieEntry.COLUMN_ID, "4");
-//        contentValues.put(MovieEntry.COLUMN_IMAGE_URL, "https://d304k3mn1nwj0a.cloudfront.net/anime/Fairy-Tail.png");
-//        contentValues.put(MovieEntry.COLUMN_TITLE, "title");
-//        contentValues.put(MovieEntry.COLUMN_RELEASE_DATE, "2017");
-//        contentValues.put(MovieEntry.COLUMN_SYNOPSIS, "film gamed fash5");
-//        contentValues.put(MovieEntry.COLUMN_VOTE_AVERAGE, "10/10");
-//
-//        getContext().getContentResolver().insert(MovieEntry.CONTENT_URI, contentValues);
-//
-        Cursor cursor = getContext().getContentResolver().query(MovieEntry.CONTENT_URI,null,null, null,null);
-        while (cursor.moveToNext()){
-            Log.d("movied id",cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_ID)));
-        }
         updateUi();
     }
 

@@ -43,7 +43,7 @@ public class Movie implements Parcelable {
     }
 
     public String getVoteAverage() {
-        return voteAverage + "/10";
+        return voteAverage ;
     }
 
     public Long getID() {

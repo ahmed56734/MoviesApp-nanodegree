@@ -146,31 +146,31 @@ public class Utils {
         return reviews;
     }
 
-//    public static List<Trailer> parseTrailersJSON(String json){
-//
-//        List<Trailer> trailers = new ArrayList<>();
-//
-//        if (json == null || json.isEmpty())
-//            return null;
-//
-//        try {
-//
-//            JSONObject rootJSON = new JSONObject(json);
-//            JSONArray trailersResultArray = rootJSON.getJSONArray("results");
-//
-//            for(int i = 0, n = trailersResultArray.length(); i < n ; i++){
-//
-//                JSONObject trailerJSON = trailersResultArray.getJSONObject(i);
-//                String trailerName = trailerJSON.getString("name");
-//                String trailerUrl = trailerJSON.getString("key");
-//
-//                trailers.add(new Trailer(trailerName, trailerUrl));
-//            }
-//
-//        } catch (JSONException e){
-//            Log.e(LOG_TAG, "error parsing json", e);
-//        }
-//
-//        return trailers;
-//    }
+    public static List<Trailer> parseTrailersJSON(String json){
+
+        List<Trailer> trailers = new ArrayList<>();
+
+        if (json == null || json.isEmpty())
+            return null;
+
+        try {
+
+            JSONObject rootJSON = new JSONObject(json);
+            JSONArray trailersResultArray = rootJSON.getJSONArray("results");
+
+            for(int i = 0, n = trailersResultArray.length(); i < n ; i++){
+
+                JSONObject trailerJSON = trailersResultArray.getJSONObject(i);
+                String trailerName = trailerJSON.getString("name");
+                String trailerUrl = trailerJSON.getString("key");
+
+                trailers.add(new Trailer(trailerName, trailerUrl));
+            }
+
+        } catch (JSONException e){
+            Log.e(LOG_TAG, "error parsing json", e);
+        }
+
+        return trailers;
+    }
 }
